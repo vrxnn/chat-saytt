@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vuroxen Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Fon rasmi -->
+    <div class="background-overlay"></div>
+
+    <!-- Auth Page -->
+    <div id="auth-page" class="app-wrapper">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>💬 Vuroxen Chat</h1>
+                <p>Xush kelibsiz! Kirish yoki ro'yxatdan o'tish</p>
+            </div>
+            
+            <div class="auth-form">
+                <input type="text" id="username" placeholder="Foydalanuvchi nomi" class="auth-input">
+                <input type="password" id="password" placeholder="Parol" class="auth-input">
+                <button onclick="handleAuth()" class="auth-btn primary-btn">Kirish</button>
+                
+                <div class="divider">
+                    <span>yoki</span>
+                </div>
+                
+                <button onclick="signInWithGoogle()" class="auth-btn google-btn">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+                        <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9.003 18z" fill="#34A853"/>
+                        <path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+                        <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.003 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/>
+                    </svg>
+                    Google orqali kirish
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Page -->
+    <div id="chat-page" class="app-wrapper" style="display: none;">
+        <header>
+            <div class="user-info">
+                <div class="avatar-main" id="avatar-text">V</div>
+                <div>
+                    <b id="display-name">...</b>
+                    <p id="user-rank"></p>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="online-status">
+                    <span class="online-dot"></span>
+                    <span class="online-count">0</span> online
+                </span>
+                <button onclick="logout()" class="logout-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div id="pin-bar" class="pin-bar" style="display:none;">
+            <span class="pin-icon">📌</span>
+            <span id="pin-text"></span>
+        </div>
+
+        <!-- Chat Messages -->
+        <main id="chat-messages" class="chat-container"></main>
+
+        <!-- Input Area (PASTDA) -->
+        <footer class="chat-footer">
+            <!-- File Preview -->
+            <div id="file-preview" class="file-preview" style="display: none;">
+                <div class="file-preview-content">
+                    <span id="file-name"></span>
+                    <button onclick="cancelFile()" class="file-cancel-btn">✕</button>
+                </div>
+            </div>
+
+            <div class="message-input-container">
+                <button onclick="triggerFileInput()" class="input-action-btn" title="Fayl yuklash">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>
+                </button>
+                
+                <input type="file" id="file-input" style="display: none;" accept="image/*,audio/*,video/*,.pdf,.doc,.docx,.txt">
+                
+                <input type="text" id="message-input" placeholder="Xabar yozing..." class="message-input">
+                
+                <button onclick="sendMessageBtn()" class="send-message-btn" id="send-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
